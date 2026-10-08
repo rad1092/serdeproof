@@ -46,6 +46,7 @@ No Maven Central upload, signature, notarization, performance benchmark, user in
 
 - A JDK 17 supplementary-Unicode classpath issue required a temporary manifest launcher for adapter JVMs.
 - A test fixture worked with `mvn test` but omitted API classes after packaging; the fixture now handles directory and JAR code sources.
+- Windows JDK `jar` rejected an emoji output filename in the installation harness. The smoke now packages with an ordinary name and renames the JAR before executing the same Unicode adapter-path test.
 - Strict UTF-8 validation, bounded metadata, explicit classpath fingerprints and CLI path-alias protection were added after independent review.
 - Default reports omit raw adapter errors and values, including during malformed responses and crashes.
 

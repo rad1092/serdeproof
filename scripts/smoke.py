@@ -103,7 +103,11 @@ def main():
         sources = sorted((example / "src").rglob("*.java")) + [example / "LibraryExample.java"]
         run([javac, "-encoding", "UTF-8", "--release", "17", "-cp", cp, "-d", classes, *sources])
         adapter_jar = workspace / "사용자 adapter 😀.jar"
-        run([jar, "--create", "--file", adapter_jar, "-C", classes, "."])
+        # Windows JDK jartool may reject an emoji destination while creating its temporary
+        # file. Package normally, then retain full Unicode runtime coverage via a rename.
+        staged_adapter = workspace / "adapter-build.jar"
+        run([jar, "--create", "--file", staged_adapter, "-C", classes, "."])
+        staged_adapter.rename(adapter_jar)
         adapter = {"adapterClass": "example.OrderAdapter",
                    "classpath": [str(adapter_jar), str(artifacts["serdeproof-api"]), str(artifacts["demo-jackson2"])]}
         manifest = workspace / "library-manifest.json"
