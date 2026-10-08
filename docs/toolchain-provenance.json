@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-08T01:10:42.349319+00:00",
+  "platform": "macOS aarch64",
+  "installationScope": "Project-local .tools; no system installation or privileges required.",
+  "toolchains": [
+    {
+      "name": "Eclipse Temurin JDK",
+      "version": "17.0.20.1+1",
+      "metadataUrl": "https://api.adoptium.net/v3/assets/latest/17/hotspot?architecture=aarch64&image_type=jdk&os=mac&vendor=eclipse",
+      "archiveUrl": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.20.1%2B1/OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.20.1_1.tar.gz",
+      "checksumUrl": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.20.1%2B1/OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.20.1_1.tar.gz.sha256.txt",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "196d13ba5f10414bef7f6a05a9b3f00edacb18ebacef2b99485db9e2ee18f0e8",
+      "checksumVerified": true,
+      "executionVerified": "java -version: Temurin-17.0.20.1+1",
+      "relativeHome": ".tools/jdk-17.0.20.1+1/Contents/Home"
+    },
+    {
+      "name": "Apache Maven",
+      "version": "3.9.11",
+      "archiveUrl": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.11/apache-maven-3.9.11-bin.tar.gz",
+      "checksumUrl": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.11/apache-maven-3.9.11-bin.tar.gz.sha512",
+      "checksumAlgorithm": "SHA-512",
+      "checksum": "bcfe4fe305c962ace56ac7b5fc7a08b87d5abd8b7e89027ab251069faebee516b0ded8961445d6d91ec1985dfe30f8153268843c89aa392733d1a3ec956c9978",
+      "checksumVerified": true,
+      "executionVerified": "mvn -version: Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)",
+      "relativeExecutable": ".tools/apache-maven-3.9.11/bin/mvn"
+    }
+  ],
+  "dependencyPinCandidates": [
+    {
+      "coordinate": "com.fasterxml.jackson.core:jackson-databind:2.22.3",
+      "metadataUrl": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/maven-metadata.xml",
+      "metadataLastUpdated": "20260921210639",
+      "releasePomUrl": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.22.3/jackson-databind-2.22.3.pom",
+      "releasePomSha256": "27a5c6657b955d088daf586f2be9769224e33618ab4f44682a1b36ed98f7b904",
+      "verified": "Stable release listed in Maven Central metadata; exact POM HTTP 200 and version checked."
+    },
+    {
+      "coordinate": "tools.jackson.core:jackson-databind:3.2.3",
+      "metadataUrl": "https://repo.maven.apache.org/maven2/tools/jackson/core/jackson-databind/maven-metadata.xml",
+      "metadataLastUpdated": "20260922032755",
+      "releasePomUrl": "https://repo.maven.apache.org/maven2/tools/jackson/core/jackson-databind/3.2.3/jackson-databind-3.2.3.pom",
+      "releasePomSha256": "b2d27a02aed646aadb538cb107379c72b9d23944837330c782aad33897880a8b",
+      "verified": "Stable release listed in Maven Central metadata; exact POM HTTP 200 and version checked."
+    },
+    {
+      "coordinate": "org.junit.jupiter:junit-jupiter:6.1.3",
+      "metadataUrl": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/maven-metadata.xml",
+      "metadataLastUpdated": "20260807124328",
+      "releasePomUrl": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/6.1.3/junit-jupiter-6.1.3.pom",
+      "releasePomSha256": "ebfffb41861ab1ccc989de2c9c2d11924e5ddded2728b053f5f2fddc8409c0e1",
+      "verified": "Stable release listed in Maven Central metadata; exact POM HTTP 200 and version checked."
+    }
+  ],
+  "qualification": "Checksums verify downloaded bytes against official HTTPS distribution metadata. No detached-signature verification was performed. Dependency versions are available stable releases, not a claim of freedom from vulnerabilities. The project dependency scan is recorded separately.",
+  "cleanup": "Downloaded toolchain archives and temporary metadata/POM downloads removed after verification. Extracted runtimes remain in ignored .tools for local builds.",
+  "mavenWrapper": {
+    "version": "3.3.4",
+    "type": "only-script",
+    "artifactUrl": "https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper-distribution/3.3.4/maven-wrapper-distribution-3.3.4-only-script.zip",
+    "publishedSha1Url": "https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper-distribution/3.3.4/maven-wrapper-distribution-3.3.4-only-script.zip.sha1",
+    "publishedSha1Verified": true,
+    "sha256": "6cb584c2bc907b849a0b931d8266d3ff3214cdd3127115ed4f49fb7176413d36",
+    "distributionSha256": "0d7125e8c91097b36edb990ea5934e6c68b4440eef4ea96510a0f6815e7eeadb",
+    "distributionSha512Verified": true,
+    "distributionSha512Url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.11/apache-maven-3.9.11-bin.zip.sha512",
+    "qualification": "Wrapper distribution publishes SHA-1 only; this is a download consistency check, not collision-resistant authenticity proof. Maven binary ZIP was verified against its published SHA-512 before deriving the SHA-256 enforced by both wrapper launchers."
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "platform": "macOS arm64",
+  "java": "Eclipse Temurin 17.0.20.1+1",
+  "maven": "3.9.11",
+  "command": "./mvnw -B -ntp clean install",
+  "suites": [
+    {
+      "suite": "demo.Jackson2AdapterTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "demo.Jackson3AdapterTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "io.github.rad1092.serdeproof.api.WireProtocolTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "io.github.rad1092.serdeproof.cli.MainTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "io.github.rad1092.serdeproof.MigrationLabTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "io.github.rad1092.serdeproof.internal.FingerprintsTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "io.github.rad1092.serdeproof.internal.JsonEvidenceTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "io.github.rad1092.serdeproof.runtime.JvmAdapterTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "totals": {
+    "tests": 68,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "installedSmoke": {
+    "passed": true,
+    "scenarioCount": 7,
+    "note": "Exact final artifact digests and CI commit are attached to the GitHub release."
+  }
+}

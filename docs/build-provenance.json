@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "githubActions": [
+    {
+      "action": "actions/checkout",
+      "releaseTag": "v7.0.1",
+      "commit": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "tagRefUrl": "https://api.github.com/repos/actions/checkout/git/ref/tags/v7.0.1",
+      "manifestUrl": "https://raw.githubusercontent.com/actions/checkout/3d3c42e5aac5ba805825da76410c181273ba90b1/action.yml",
+      "manifestSha256": "d59219cb79590abdb877deaa14e3b65a00c05318bf5a6f3b989b9162b5d08c35"
+    },
+    {
+      "action": "actions/setup-java",
+      "releaseTag": "v6.0.1",
+      "commit": "de7274f081f381c8f8158605e0321c36c376e2e6",
+      "tagRefUrl": "https://api.github.com/repos/actions/setup-java/git/ref/tags/v6.0.1",
+      "manifestUrl": "https://raw.githubusercontent.com/actions/setup-java/de7274f081f381c8f8158605e0321c36c376e2e6/action.yml",
+      "manifestSha256": "0fea4e9d329b3503a7bc1a64c2221d47252e7c520403e674a7d8c5a13a88d3b9"
+    },
+    {
+      "action": "actions/setup-python",
+      "releaseTag": "v7.0.0",
+      "commit": "5fda3b95a4ea91299a34e894583c3862153e4b97",
+      "tagRefUrl": "https://api.github.com/repos/actions/setup-python/git/ref/tags/v7.0.0",
+      "manifestUrl": "https://raw.githubusercontent.com/actions/setup-python/5fda3b95a4ea91299a34e894583c3862153e4b97/action.yml",
+      "manifestSha256": "e6dc8046c02bd3c9f7bf2fea6ba2e59b4e83c7de2b26ec2149a1627f5d66f96c"
+    },
+    {
+      "action": "actions/upload-artifact",
+      "releaseTag": "v7.0.2",
+      "commit": "cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+      "tagRefUrl": "https://api.github.com/repos/actions/upload-artifact/git/ref/tags/v7.0.2",
+      "manifestUrl": "https://raw.githubusercontent.com/actions/upload-artifact/cf430e030ddbb5b0abf93d22962f4752f3646cd9/action.yml",
+      "manifestSha256": "c5979822866a72362e609844b6ebe77d4b7e759af68cc1c2c425dcf51481fab4"
+    }
+  ],
+  "policy": "Full official release commit pins, contents:read only, no persisted checkout credentials. Action manifests inspected; no claim of independent full-source security audit.",
+  "mavenPlugins": "Explicit Maven-3-compatible stable plugin versions in root pom.xml were selected from official Maven Central metadata. Maven dependency inventory is generated at target/bom.json by CycloneDX with test dependencies included."
+}

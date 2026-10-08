@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.github.rad1092.serdeproof</groupId>
+  <artifactId>serdeproof-parent</artifactId>
+  <version>0.1.0</version>
+  <packaging>pom</packaging>
+  <name>SerdeProof</name>
+  <description>Reproducible serializer migration experiments against real Java DTOs and local fixture corpora.</description>
+  <url>https://github.com/rad1092/serdeproof</url>
+  <licenses><license><name>Apache License, Version 2.0</name><url>https://www.apache.org/licenses/LICENSE-2.0.txt</url><distribution>repo</distribution></license></licenses>
+  <developers><developer><id>rad1092</id><name>SerdeProof contributors</name><url>https://github.com/rad1092</url></developer></developers>
+  <scm><connection>scm:git:https://github.com/rad1092/serdeproof.git</connection><developerConnection>scm:git:ssh://git@github.com/rad1092/serdeproof.git</developerConnection><url>https://github.com/rad1092/serdeproof</url><tag>HEAD</tag></scm>
+  <issueManagement><system>GitHub</system><url>https://github.com/rad1092/serdeproof/issues</url></issueManagement>
+  <modules>
+    <module>serdeproof-api</module><module>serdeproof-core</module><module>serdeproof-cli</module>
+    <module>demo-jackson2</module><module>demo-jackson3</module><module>serdeproof-dist</module>
+  </modules>
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <project.build.outputTimestamp>2026-10-08T00:00:00Z</project.build.outputTimestamp>
+    <jackson2.version>2.22.3</jackson2.version><jackson3.version>3.2.3</jackson3.version><junit.version>6.1.3</junit.version>
+  </properties>
+  <dependencyManagement><dependencies>
+    <dependency><groupId>io.github.rad1092.serdeproof</groupId><artifactId>serdeproof-api</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>io.github.rad1092.serdeproof</groupId><artifactId>serdeproof-core</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>org.junit</groupId><artifactId>junit-bom</artifactId><version>${junit.version}</version><type>pom</type><scope>import</scope></dependency>
+  </dependencies></dependencyManagement>
+  <build>
+    <resources>
+      <resource><directory>src/main/resources</directory></resource>
+      <resource><directory>${project.basedir}/..</directory><targetPath>META-INF/serdeproof</targetPath><includes><include>LICENSE</include><include>NOTICE</include><include>THIRD_PARTY_NOTICES.md</include></includes></resource>
+    </resources>
+    <pluginManagement><plugins>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-clean-plugin</artifactId><version>3.5.0</version></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-resources-plugin</artifactId><version>3.5.0</version></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.5.1</version><configuration><archive><manifest><addDefaultImplementationEntries>true</addDefaultImplementationEntries></manifest></archive></configuration></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-install-plugin</artifactId><version>3.2.0</version></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-deploy-plugin</artifactId><version>3.2.0</version></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-dependency-plugin</artifactId><version>3.11.0</version></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-assembly-plugin</artifactId><version>3.8.0</version></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-shade-plugin</artifactId><version>3.6.2</version><configuration>
+        <createDependencyReducedPom>false</createDependencyReducedPom>
+        <filters><filter><artifact>*:*</artifact><excludes><exclude>META-INF/*.SF</exclude><exclude>META-INF/*.DSA</exclude><exclude>META-INF/*.RSA</exclude><exclude>module-info.class</exclude><exclude>META-INF/versions/*/module-info.class</exclude></excludes></filter></filters>
+        <transformers>
+          <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+          <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer"><resource>META-INF/LICENSE</resource></transformer>
+          <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer"><resource>META-INF/NOTICE</resource></transformer>
+          <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"><mainClass>${serdeproof.mainClass}</mainClass><manifestEntries><Multi-Release>true</Multi-Release></manifestEntries></transformer>
+        </transformers>
+      </configuration></plugin>
+    </plugins></pluginManagement>
+    <plugins>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-enforcer-plugin</artifactId><version>3.6.3</version><executions><execution><id>supported-toolchain</id><goals><goal>enforce</goal></goals><configuration><rules><requireJavaVersion><version>[17,)</version></requireJavaVersion><requireMavenVersion><version>[3.9.11,4)</version></requireMavenVersion></rules></configuration></execution></executions></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.16.0</version><configuration><release>${maven.compiler.release}</release><parameters>true</parameters></configuration></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.6.0</version><configuration><useModulePath>false</useModulePath><argLine>-Dfile.encoding=UTF-8</argLine></configuration></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-source-plugin</artifactId><version>3.4.0</version><executions><execution><id>attach-sources</id><goals><goal>jar-no-fork</goal></goals></execution></executions></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-javadoc-plugin</artifactId><version>3.12.0</version><configuration><release>17</release><notimestamp>true</notimestamp><quiet>true</quiet></configuration><executions><execution><id>attach-javadocs</id><goals><goal>jar</goal></goals></execution></executions></plugin>
+      <plugin><groupId>org.cyclonedx</groupId><artifactId>cyclonedx-maven-plugin</artifactId><version>2.9.3</version><inherited>false</inherited><configuration><includeTestScope>true</includeTestScope><includeBomSerialNumber>false</includeBomSerialNumber><outputFormat>json</outputFormat><outputTimestamp>${project.build.outputTimestamp}</outputTimestamp></configuration><executions><execution><id>dependency-inventory</id><phase>package</phase><goals><goal>makeAggregateBom</goal></goals></execution></executions></plugin>
+    </plugins>
+  </build>
+</project>

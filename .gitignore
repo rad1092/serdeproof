@@ -1,0 +1,9 @@
+**/target/
+.tools/
+.local-repository/
+dist/
+reports/
+.DS_Store
+.env*
+*.key
+*.pem

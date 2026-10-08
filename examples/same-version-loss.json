@@ -1,0 +1,23 @@
+{
+  "baseline": {
+    "adapterClass": "demo.Jackson2Adapter",
+    "classpath": [
+      "../demo-jackson2/target/demo-jackson2-0.1.0.jar"
+    ],
+    "configuration": "config/lossy-module.json"
+  },
+  "candidate": {
+    "adapterClass": "demo.Jackson2Adapter",
+    "classpath": [
+      "../demo-jackson2/target/demo-jackson2-0.1.0.jar"
+    ],
+    "configuration": "config/lossy-module.json"
+  },
+  "fixtures": [
+    {
+      "id": "money-module",
+      "type": "money",
+      "file": "corpus/money-module.json"
+    }
+  ]
+}

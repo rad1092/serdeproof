@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "tool": "Gitleaks",
+  "version": "8.30.1",
+  "license": "MIT",
+  "licenseUrl": "https://github.com/gitleaks/gitleaks/blob/v8.30.1/LICENSE",
+  "licenseSha256": "e3884b252b3bfc045e55be43a34d1e80da070bc6f804ac95bf4660e97d62ebc6",
+  "officialRelease": "https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1",
+  "archiveUrl": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_darwin_arm64.tar.gz",
+  "checksumsUrl": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_checksums.txt",
+  "archiveSha256": "b40ab0ae55c505963e365f271a8d3846efbc170aa17f2607f13df610a9aeb6a5",
+  "checksumVerifiedAgainst": [
+    "official release checksums file",
+    "GitHub release asset digest"
+  ],
+  "binarySha256": "ba52fb1bfabbcde42f032afad3d6e0b19dff8ed105229a16e7caa338bbc0e84f",
+  "scan": {
+    "kind": "release-source-working-tree-snapshot",
+    "checkedAt": "2026-10-08T01:31:21.424842+00:00",
+    "fileCount": 91,
+    "contentManifestSha256": "a212e3306bb01fcde0d31c53a95bb4a270ccee4e96d0da4a1d5beabb09322ffc",
+    "selection": "Sorted git ls-files --cached --others --exclude-standard ordinary files. Hash each relative UTF-8 path + NUL + SHA256(file bytes).",
+    "excludedEvidenceFiles": [
+      "docs/evidence/gitleaks.json"
+    ],
+    "exclusionReason": "Exclude the report being generated to avoid a self-referential source hash. A subsequent committed-history scan covers this generated provenance file.",
+    "command": ".tools/gitleaks dir .tools/gitleaks-source-snapshot --redact=100 --no-banner --no-color --ignore-gitleaks-allow --timeout 120 --report-format json --report-path target/gitleaks.json",
+    "exitCode": 0,
+    "findingCount": 0,
+    "redactedReportSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "limitations": "Default Gitleaks rules are heuristic and cannot prove absence of secrets. This source snapshot excludes its own generated evidence file to avoid self-reference; a subsequent committed-history scan covers the final commit, with evidence kept outside source. Ignored build caches and private reports were excluded from the source scan.",
+  "cleanup": "Downloaded archive, metadata, checksum file and copied source snapshot were removed. Executable and its MIT license remain in ignored .tools for the final scan."
+}

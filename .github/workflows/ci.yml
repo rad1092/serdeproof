@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: ${{ matrix.os }} / Java ${{ matrix.java }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        java: ['17', '21']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+      - name: Verify and install all artifacts (Unix)
+        if: runner.os != 'Windows'
+        run: ./mvnw -B -ntp clean install
+      - name: Verify and install all artifacts (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: .\mvnw.cmd -B -ntp clean install
+      - name: Exercise installed library, CLI, and distribution
+        run: python scripts/smoke.py
+      - name: Inspect distribution sources and preserved licenses
+        run: python scripts/verify_packaging.py
+      - name: Preserve test evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: evidence-${{ matrix.os }}-java-${{ matrix.java }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            **/target/surefire-reports/*.xml
+            target/bom.json
+            target/verification/**
+
+  audit:
+    name: Dependency, license, and secret audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+      - name: Build full dependency inventory
+        run: ./mvnw -B -ntp -DskipTests package
+      - name: Query vulnerabilities and verify licenses and secrets
+        run: python scripts/audit.py --output target/audit.json
+      - name: Preserve audit evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dependency-audit
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            target/bom.json
+            target/audit.json
+            target/verification/**

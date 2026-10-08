@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 https://maven.apache.org/xsd/assembly-2.2.0.xsd">
+  <id>distribution</id><formats><format>zip</format></formats><includeBaseDirectory>true</includeBaseDirectory><baseDirectory>serdeproof-${project.version}</baseDirectory>
+  <dependencySets><dependencySet><outputDirectory>lib</outputDirectory><useProjectArtifact>false</useProjectArtifact><useTransitiveDependencies>false</useTransitiveDependencies><unpack>false</unpack></dependencySet></dependencySets>
+  <fileSets>
+    <fileSet><directory>..</directory><outputDirectory>/</outputDirectory><includes><include>README.md</include><include>CHANGELOG.md</include><include>LICENSE</include><include>NOTICE</include><include>THIRD_PARTY_NOTICES.md</include><include>SECURITY.md</include><include>docs/**</include><include>examples/**</include></includes><excludes><exclude>**/target/**</exclude><exclude>**/__pycache__/**</exclude></excludes><fileMode>0644</fileMode></fileSet>
+    <fileSet><directory>..</directory><outputDirectory>source</outputDirectory><useDefaultExcludes>false</useDefaultExcludes><includes><include>pom.xml</include><include>mvnw.cmd</include><include>.mvn/**</include><include>.gitattributes</include><include>.gitignore</include><include>serdeproof-*/pom.xml</include><include>serdeproof-*/src/**</include><include>demo-*/pom.xml</include><include>demo-*/src/**</include><include>scripts/**</include><include>.github/workflows/**</include><include>LICENSE</include><include>NOTICE</include><include>THIRD_PARTY_NOTICES.md</include><include>README.md</include><include>CHANGELOG.md</include><include>SECURITY.md</include><include>docs/**</include><include>examples/**</include></includes><excludes><exclude>**/target/**</exclude><exclude>**/__pycache__/**</exclude></excludes><fileMode>0644</fileMode></fileSet>
+    <fileSet><directory>..</directory><outputDirectory>source</outputDirectory><includes><include>mvnw</include></includes><fileMode>0755</fileMode></fileSet>
+    <fileSet><directory>../serdeproof-api/target</directory><outputDirectory>lib</outputDirectory><includes><include>*-sources.jar</include><include>*-javadoc.jar</include></includes></fileSet>
+    <fileSet><directory>../serdeproof-core/target</directory><outputDirectory>lib</outputDirectory><includes><include>*-sources.jar</include><include>*-javadoc.jar</include></includes></fileSet>
+    <fileSet><directory>../serdeproof-cli/target</directory><outputDirectory>lib</outputDirectory><includes><include>*-sources.jar</include><include>*-javadoc.jar</include></includes></fileSet>
+    <fileSet><directory>../demo-jackson2/target</directory><outputDirectory>lib</outputDirectory><includes><include>*-sources.jar</include><include>*-javadoc.jar</include></includes></fileSet>
+    <fileSet><directory>../demo-jackson3/target</directory><outputDirectory>lib</outputDirectory><includes><include>*-sources.jar</include><include>*-javadoc.jar</include></includes></fileSet>
+  </fileSets>
+</assembly>

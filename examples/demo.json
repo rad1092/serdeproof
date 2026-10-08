@@ -1,0 +1,116 @@
+{
+  "baseline": {
+    "adapterClass": "demo.Jackson2Adapter",
+    "classpath": [
+      "../demo-jackson2/target/demo-jackson2-0.1.0.jar"
+    ]
+  },
+  "candidate": {
+    "adapterClass": "demo.Jackson3Adapter",
+    "classpath": [
+      "../demo-jackson3/target/demo-jackson3-0.1.0.jar"
+    ]
+  },
+  "fixtures": [
+    {
+      "id": "unknown-field",
+      "type": "primitive",
+      "file": "corpus/unknown-field.json"
+    },
+    {
+      "id": "trailing-token",
+      "type": "primitive",
+      "file": "corpus/trailing-token.json"
+    },
+    {
+      "id": "null-primitive",
+      "type": "primitive",
+      "file": "corpus/null-primitive.json"
+    },
+    {
+      "id": "missing-primitive",
+      "type": "primitive",
+      "file": "corpus/missing-primitive.json"
+    },
+    {
+      "id": "enum-default",
+      "type": "enum",
+      "file": "corpus/enum-default.json",
+      "hints": {
+        "/value": "ENUM"
+      }
+    },
+    {
+      "id": "enum-name",
+      "type": "enum",
+      "file": "corpus/enum-name.json",
+      "hints": {
+        "/value": "ENUM"
+      }
+    },
+    {
+      "id": "enum-to-string",
+      "type": "enum",
+      "file": "corpus/enum-to-string.json",
+      "hints": {
+        "/value": "ENUM"
+      }
+    },
+    {
+      "id": "date-iso",
+      "type": "date",
+      "file": "corpus/date-iso.json",
+      "hints": {
+        "/value": "DATE"
+      }
+    },
+    {
+      "id": "historical-5729-negative-date",
+      "type": "date",
+      "file": "corpus/historical-5729-negative-date.json",
+      "hints": {
+        "/value": "DATE"
+      }
+    },
+    {
+      "id": "historical-3906-record",
+      "type": "record-visibility",
+      "file": "corpus/historical-3906-record.json"
+    },
+    {
+      "id": "precise-numbers",
+      "type": "numbers",
+      "file": "corpus/precise-numbers.json"
+    },
+    {
+      "id": "untyped-precision",
+      "type": "untyped-number",
+      "file": "corpus/untyped-precision.json"
+    },
+    {
+      "id": "untyped-scale",
+      "type": "untyped-number",
+      "file": "corpus/untyped-scale.json"
+    },
+    {
+      "id": "missing-reference",
+      "type": "nullable",
+      "file": "corpus/missing-reference.json"
+    },
+    {
+      "id": "null-reference",
+      "type": "nullable",
+      "file": "corpus/null-reference.json"
+    },
+    {
+      "id": "money-module",
+      "type": "money",
+      "file": "corpus/money-module.json"
+    },
+    {
+      "id": "unicode-path",
+      "type": "nullable",
+      "file": "corpus/한글 공백.json"
+    }
+  ]
+}

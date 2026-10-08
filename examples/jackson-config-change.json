@@ -1,0 +1,37 @@
+{
+  "baseline": {
+    "adapterClass": "demo.Jackson2Adapter",
+    "classpath": [
+      "../demo-jackson2/target/demo-jackson2-0.1.0.jar"
+    ]
+  },
+  "candidate": {
+    "adapterClass": "demo.Jackson3Adapter",
+    "classpath": [
+      "../demo-jackson3/target/demo-jackson3-0.1.0.jar"
+    ],
+    "configuration": "config/candidate.json"
+  },
+  "fixtures": [
+    {
+      "id": "untyped-precision",
+      "type": "untyped-number",
+      "file": "corpus/untyped-precision.json"
+    },
+    {
+      "id": "untyped-scale",
+      "type": "untyped-number",
+      "file": "corpus/untyped-scale.json"
+    },
+    {
+      "id": "missing-reference",
+      "type": "nullable",
+      "file": "corpus/missing-reference.json"
+    },
+    {
+      "id": "null-reference",
+      "type": "nullable",
+      "file": "corpus/null-reference.json"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+SerdeProof
+Copyright 2026 SerdeProof contributors
+
+This product is licensed under the Apache License, Version 2.0.
+See LICENSE for the full license text.
+
+Dependency-containing distributions include Jackson components developed by
+Tatu Saloranta and the Jackson community. Jackson core also includes
+FastDoubleParser and Schubfach code with separate notices and licenses.
+See THIRD_PARTY_NOTICES.md and the retained META-INF license and notice
+resources inside the distributed JARs.
+
+No endorsement by the Apache Software Foundation, FasterXML, Jackson,
+their contributors, or any other third-party project is implied.

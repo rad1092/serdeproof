@@ -1,0 +1,41 @@
+{
+  "baseline": {
+    "adapterClass": "demo.Jackson2Adapter",
+    "classpath": [
+      "../demo-jackson2/target/demo-jackson2-0.1.0.jar"
+    ]
+  },
+  "candidate": {
+    "adapterClass": "demo.Jackson3Adapter",
+    "classpath": [
+      "../demo-jackson3/target/demo-jackson3-0.1.0.jar"
+    ]
+  },
+  "fixtures": [
+    {
+      "id": "precise-numbers",
+      "type": "numbers",
+      "file": "corpus/precise-numbers.json"
+    },
+    {
+      "id": "missing-reference",
+      "type": "nullable",
+      "file": "corpus/missing-reference.json"
+    },
+    {
+      "id": "null-reference",
+      "type": "nullable",
+      "file": "corpus/null-reference.json"
+    },
+    {
+      "id": "money-module",
+      "type": "money",
+      "file": "corpus/money-module.json"
+    },
+    {
+      "id": "unicode-path",
+      "type": "nullable",
+      "file": "corpus/한글 공백.json"
+    }
+  ]
+}

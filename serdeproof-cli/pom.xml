@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>io.github.rad1092.serdeproof</groupId><artifactId>serdeproof-parent</artifactId><version>0.1.0</version></parent>
+  <artifactId>serdeproof-cli</artifactId><name>SerdeProof command line</name>
+  <properties><serdeproof.mainClass>io.github.rad1092.serdeproof.cli.Main</serdeproof.mainClass></properties>
+  <dependencies>
+    <dependency><groupId>io.github.rad1092.serdeproof</groupId><artifactId>serdeproof-core</artifactId></dependency>
+    <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+  </dependencies>
+  <build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-shade-plugin</artifactId><executions><execution><phase>package</phase><goals><goal>shade</goal></goals></execution></executions></plugin></plugins></build>
+</project>
