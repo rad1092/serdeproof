@@ -2,13 +2,13 @@
   "baseline": {
     "adapterClass": "demo.Jackson2Adapter",
     "classpath": [
-      "../lib/demo-jackson2-0.1.0.jar"
+      "../lib/demo-jackson2-0.1.1.jar"
     ]
   },
   "candidate": {
     "adapterClass": "demo.Jackson3Adapter",
     "classpath": [
-      "../lib/demo-jackson3-0.1.0.jar"
+      "../lib/demo-jackson3-0.1.1.jar"
     ]
   },
   "fixtures": [

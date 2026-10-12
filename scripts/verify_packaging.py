@@ -8,16 +8,16 @@ from pathlib import Path
 import hashlib,json,os,sys,zipfile
 root=Path(__file__).resolve().parents[1]
 repository=Path(os.environ.get('SERDEPROOF_MAVEN_REPO', str(Path.home()/'.m2/repository')))
-version='0.1.0'
+version='0.1.1'
 modules=['serdeproof-api','serdeproof-core','serdeproof-cli','demo-jackson2','demo-jackson3']
-archive=root/'serdeproof-dist/target/serdeproof-0.1.0.zip'
+archive=root/'serdeproof-dist/target/serdeproof-0.1.1.zip'
 stale=[]
 with zipfile.ZipFile(archive) as z:
     assert z.testzip() is None
     names=z.namelist(); files=[n for n in names if not n.endswith('/')]
     assert len(names)==len(set(names))
     assert not any(any(x in Path(n).parts for x in ['.tools','.local-repository','.git','target','reports','__pycache__']) for n in names)
-    prefix='serdeproof-0.1.0/'
+    prefix='serdeproof-0.1.1/'
     required=['LICENSE','NOTICE','THIRD_PARTY_NOTICES.md','README.md','examples/release-demo.json','source/pom.xml','source/mvnw','source/mvnw.cmd','source/.mvn/wrapper/maven-wrapper.properties','source/serdeproof-dist/src/assembly/distribution.xml']
     for m in modules:
         required.extend(['lib/'+m+'-'+version+s+'.jar' for s in ['', '-sources','-javadoc']])

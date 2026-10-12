@@ -234,7 +234,7 @@ public final class MigrationLab {
         catch (IOException | RuntimeException e) { checkInterrupted(); errors.add(error("REPRODUCTION", "ADAPTER_CONTENT_CHANGED", name)); }
     }
     private static Map<String, Object> base(LocalDate asOf, boolean details) {
-        return map("schemaVersion", 1, "toolVersion", "0.1.0", "evaluationDate", asOf.toString(),
+        return map("schemaVersion", 1, "toolVersion", "0.1.1", "evaluationDate", asOf.toString(),
                 "details", details, "environment", map("osName", System.getProperty("os.name"),
                         "osArch", System.getProperty("os.arch"), "osVersion", System.getProperty("os.version"),
                         "javaVersion", System.getProperty("java.version"), "javaVendor", System.getProperty("java.vendor"),

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.rad1092.serdeproof</groupId>
   <artifactId>serdeproof-parent</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <packaging>pom</packaging>
   <name>SerdeProof</name>
   <description>Reproducible serializer migration experiments against real Java DTOs and local fixture corpora.</description>

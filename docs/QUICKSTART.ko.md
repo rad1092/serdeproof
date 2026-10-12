@@ -7,7 +7,7 @@ JDK 17 이상을 설치한 뒤 소스 checkout 폴더 또는 릴리스 ZIP의 `s
 ```sh
 ./mvnw -B -ntp clean install
 python3 scripts/smoke.py
-java -jar serdeproof-cli/target/serdeproof-cli-0.1.0.jar run \
+java -jar serdeproof-cli/target/serdeproof-cli-0.1.1.jar run \
   --manifest examples/demo.json --json reports/demo.json \
   --junit reports/demo.xml --as-of 2026-10-08 --details
 ```
@@ -17,7 +17,7 @@ Windows PowerShell에서는 첫 줄을 `.\mvnw.cmd -B -ntp clean install`, 두 �
 릴리스 ZIP을 받았다면 압축을 푼 폴더에서 실행합니다.
 
 ```sh
-java -jar lib/serdeproof-cli-0.1.0.jar run --manifest examples/release-demo.json --json reports/demo.json --junit reports/demo.xml --as-of 2026-10-08 --details
+java -jar lib/serdeproof-cli-0.1.1.jar run --manifest examples/release-demo.json --json reports/demo.json --junit reports/demo.xml --as-of 2026-10-08 --details
 ```
 
 릴리스 파일은 서명·notarization되지 않았습니다. 체크섬은 전송 무결성 확인용입니다. Maven Central에 게시했다고 주장하지 않으며, `mvn install`은 로컬 Maven 저장소에 설치합니다.

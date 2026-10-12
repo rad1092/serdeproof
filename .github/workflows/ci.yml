@@ -45,6 +45,17 @@ jobs:
         run: python scripts/smoke.py
       - name: Inspect distribution sources and preserved licenses
         run: python scripts/verify_packaging.py
+      - name: Stage the verified release and source identity
+        if: matrix.os == 'ubuntu-latest' && matrix.java == '17'
+        run: python scripts/stage_release.py
+      - name: Preserve verified release files
+        if: matrix.os == 'ubuntu-latest' && matrix.java == '17'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-${{ github.sha }}
+          path: target/release/
+          if-no-files-found: error
+          retention-days: 14
       - name: Preserve test evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
