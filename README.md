@@ -6,7 +6,34 @@ SerdeProof is a Java 17 library and CLI. Each adapter runs in its own JVM and de
 
 **Passing means no unexpected differences were observed in this corpus. It does not prove business equivalence. Adapters are trusted local code, with your privileges; this is not a sandbox.**
 
-## Try the maintained example
+## Try the release without building
+
+Download `serdeproof-0.1.0.zip` and `SHA256SUMS` from
+[Releases](https://github.com/rad1092/serdeproof/releases/tag/v0.1.0), verify the
+archive's SHA-256, and extract the whole archive. With Java 17+ installed, open a
+terminal **inside the extracted `serdeproof-0.1.0` folder** and run:
+
+```sh
+java -jar lib/serdeproof-cli-0.1.0.jar run --manifest examples/release-demo.json --json reports/first.json --junit reports/first.xml --as-of 2026-10-08
+```
+
+The command intentionally exits **1**: the synthetic Jackson migration corpus
+has differences to review. Open `reports/first.json`: its `summary` should show
+17 fixtures processed, 12 unexpected differences, 5 untested fixtures and
+0 infrastructure errors. Each fixture includes four producer/consumer checks.
+Exit **2** means the experiment could not complete, not an ordinary migration
+finding. The same command works on PowerShell as one line.
+
+This exact public ZIP and result were verified on macOS arm64 with Java 17 on
+2026-10-12. No Maven install or hosted service is needed for this release demo.
+Keep all `lib/` JARs together; copying only the CLI JAR does not supply the demo
+adapters. Reports default to hashed identities; `--details` reveals fixture IDs,
+paths within JSON and rule metadata. Neither mode writes fixture payload values.
+Choose new report filenames for another run, or explicitly use `--force` to
+replace reports you have reviewed. See [the examples guide](examples/README.md)
+to interpret acceptance, roundtrip loss and reviewed exceptions.
+
+## Build and adapt the maintained example
 
 Install a JDK 17 or newer and run these commands from a source checkout (or the release ZIP's `source/` directory). The Maven wrapper downloads pinned Maven 3.9.11 from Maven Central.
 
