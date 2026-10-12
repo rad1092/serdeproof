@@ -94,10 +94,10 @@ Initial comparison direction is `baseline-to-candidate`. Kind is `ACCEPTANCE`, `
 ```sh
 java -jar serdeproof-cli/target/serdeproof-cli-0.1.1.jar run \
   --manifest examples/compatible.json --json reports/compatibility.json \
-  --junit reports/compatibility.xml --as-of 2026-10-08
+  --junit reports/compatibility.xml --as-of 2026-10-08 --fail-on-untested
 ```
 
-Report destinations must be distinct from each other and the manifest. Existing files are protected unless `--force` is explicit. Select output paths separate from your fixtures; `--force` replaces the selected paths. On partial filesystem failure, one report can be written before the second fails, and the CLI exits 2.
+Report destinations must be distinct from each other and all declared inputs: manifest, fixtures, mapper configuration, Java executables and classpath entries. Reports inside classpath directory trees are also refused. Existing files are protected unless `--force` is explicit; that option permits replacing reports, never these inputs, including direct hardlink aliases and symlinked parent paths. Guards run before adapters and again before report publication. Malformed manifest JSON or unsafe destinations fail before reports are created. Keep reports outside input trees; hostile filesystem races are not prevented atomically. On partial filesystem failure, one report can be written before the second fails, and the CLI exits 2.
 
 | Exit | Meaning |
 |---|---|
@@ -107,6 +107,8 @@ Report destinations must be distinct from each other and the manifest. Existing 
 | 130 | Java interruption handled; process cleanup requested. OS signal exit values can differ. |
 
 Always fail your CI gate on any nonzero exit. A malformed adapter response, timeout, crash, output flood or missing classpath is never reported as “compatible.” A fixture initially rejected by both adapters has no semantic result and appears as untested/skipped. Expected differences remain in JSON so reviewers can see what was waived.
+
+For a gate requiring initial semantic comparison for every fixture, use `--fail-on-untested` (or the fourth `MigrationLab.run` argument `true`). A nonzero `summary.untestedFixtures` then adds `COVERAGE/UNTESTED_FIXTURES`, exits 2 and emits a JUnit error while retaining skipped cases. Without the option, an entirely rejected corpus can exit 0; it has no semantic coverage. Use a separate rejection corpus when rejection itself is what you intend to test.
 
 The report records the tool/schema version, evaluation date, OS/JVM environment, limits, fixture content hashes, classpath fingerprints, mapper configuration hashes and JVM argument fingerprints. Environment-dependent behavior and external resources read by adapters are not automatically captured. Store sanitized source fixtures and the manifest privately with your build revision to reproduce a result; hashes alone cannot reconstruct them.
 

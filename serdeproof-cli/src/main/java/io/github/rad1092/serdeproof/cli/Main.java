@@ -1,6 +1,9 @@
 package io.github.rad1092.serdeproof.cli;
 
 import io.github.rad1092.serdeproof.MigrationLab;
+import io.github.rad1092.serdeproof.internal.JsonEvidence;
+import io.github.rad1092.serdeproof.internal.RunConfiguration;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -28,9 +31,10 @@ public final class Main {
             out.println("""
                     SerdeProof 0.1.1 — serializer migration evidence from your local corpus
                     Usage: java -jar serdeproof-cli-0.1.1.jar run --manifest FILE
-                             --json FILE --junit FILE [--as-of YYYY-MM-DD] [--details] [--force]
+                             --json FILE --junit FILE [--as-of YYYY-MM-DD] [--details] [--force] [--fail-on-untested]
                     --details  Include fixture IDs, JSON pointers and rule reasons. Never values.
-                    --force    Replace existing report files.
+                    --force    Replace existing reports, never declared inputs or classpath trees.
+                    --fail-on-untested  Exit 2 if any fixture lacks semantic comparison.
                     --as-of    Evaluation date for rule expiry (default: current UTC date).
                     Exit: 0 no unexpected findings; 1 differences; 2 invalid/incomplete run; 130 cancelled.
                     Adapters execute trusted local code with your privileges. This is not a sandbox.
@@ -51,11 +55,21 @@ public final class Main {
             if (sameDestination(json, junit) || sameDestination(json, manifest) || sameDestination(junit, manifest)) {
                 throw new IllegalArgumentException();
             }
+            var inputs = protectedInputs(manifest);
+            checkInputs(json, inputs);
+            checkInputs(junit, inputs);
             checkDestination(json, force);
             checkDestination(junit, force);
             LocalDate date = options.containsKey("--as-of")
                     ? LocalDate.parse(options.get("--as-of")) : LocalDate.now(ZoneOffset.UTC);
-            var report = new MigrationLab().run(manifest, date, options.containsKey("--details"));
+            var report = new MigrationLab().run(manifest, date, options.containsKey("--details"),
+                    options.containsKey("--fail-on-untested"));
+            // Ordinary edits while adapters run must not redirect publication onto inputs.
+            inputs.addAll(protectedInputs(manifest));
+            checkInputs(json, inputs);
+            checkInputs(junit, inputs);
+            checkDestination(json, force);
+            checkDestination(junit, force);
             write(json, report.json(), force);
             write(junit, report.junitXml(), force);
             out.println(switch (report.exitCode()) {
@@ -77,7 +91,7 @@ public final class Main {
     private static Map<String, String> parse(String[] args) {
         if (args.length == 0 || !args[0].equals("run")) throw new IllegalArgumentException();
         Set<String> values = Set.of("--manifest", "--json", "--junit", "--as-of");
-        Set<String> flags = Set.of("--details", "--force");
+        Set<String> flags = Set.of("--details", "--force", "--fail-on-untested");
         Map<String, String> result = new LinkedHashMap<>();
         for (int i = 1; i < args.length; i++) {
             String key = args[i];
@@ -94,6 +108,38 @@ public final class Main {
         String value = options.get(key);
         if (value == null || value.isBlank()) throw new IllegalArgumentException();
         return value;
+    }
+
+    private static ArrayList<Path> protectedInputs(Path manifest) throws IOException {
+        JsonNode root = JsonEvidence.parse(RunConfiguration.boundedRead(manifest, 1024 * 1024));
+        var inputs = new ArrayList<Path>();
+        inputs.add(manifest);
+        Path base = manifest.getParent();
+        for (JsonNode fixture : root.path("fixtures")) addInput(inputs, base, fixture.path("file"));
+        for (String name : new String[]{"baseline", "candidate"}) {
+            JsonNode adapter = root.path(name);
+            addInput(inputs, base, adapter.path("configuration"));
+            addInput(inputs, base, adapter.path("java"));
+            for (JsonNode entry : adapter.path("classpath")) addInput(inputs, base, entry);
+        }
+        inputs.add(Path.of(System.getProperty("java.home"), "bin",
+                System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT).contains("win") ? "java.exe" : "java"));
+        return inputs;
+    }
+
+    private static void addInput(ArrayList<Path> inputs, Path base, JsonNode value) {
+        if (value.isTextual() && !value.textValue().isBlank())
+            inputs.add(base.resolve(value.textValue()).toAbsolutePath().normalize());
+    }
+
+    private static void checkInputs(Path target, ArrayList<Path> inputs) throws IOException {
+        Path destination = resolvedDestination(target);
+        for (Path input : inputs) {
+            if (sameDestination(target, input)
+                    || (Files.isDirectory(input) && destination.startsWith(input.toRealPath()))) {
+                throw new IOException("Report destination overlaps a declared input");
+            }
+        }
     }
 
     private static void checkDestination(Path target, boolean force) throws IOException {

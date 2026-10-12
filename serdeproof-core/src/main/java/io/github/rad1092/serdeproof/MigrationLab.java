@@ -41,6 +41,12 @@ public final class MigrationLab {
      * Interruption propagates after child-process cleanup so callers can map it to exit code 130.
      */
     public Report run(Path manifest, LocalDate asOf, boolean details) throws IOException, InterruptedException {
+        return run(manifest, asOf, details, false);
+    }
+
+    /** Require every fixture to have semantic coverage when failOnUntested is true. */
+    public Report run(Path manifest, LocalDate asOf, boolean details, boolean failOnUntested)
+            throws IOException, InterruptedException {
         Objects.requireNonNull(manifest, "manifest");
         Objects.requireNonNull(asOf, "asOf");
         checkInterrupted();
@@ -168,6 +174,7 @@ public final class MigrationLab {
             if (!status.equals("USED")) errors.add(error("RULE", "RULE_" + status, visible(rule.id(), details)));
         }
         report.put("rules", ruleReports);
+        if (failOnUntested && untested > 0) errors.add(error("COVERAGE", "UNTESTED_FIXTURES", null));
         return finish(report, fixtureReports, errors, state.unexpected, state.expected, untested);
     }
 

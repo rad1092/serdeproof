@@ -71,6 +71,27 @@ class MigrationLabTest {
         assertEquals("1", xml(report.junitXml()).getDocumentElement().getAttribute("skipped"));
     }
 
+    @Test void strictCoverageFailsBothRejectedWithConsistentJsonAndJunit() throws Exception {
+        Path manifest = manifest(Reject.class, Reject.class, "{}", Map.of());
+        Report report = new MigrationLab().run(manifest, DATE, false, true);
+        assertEquals(2, report.exitCode());
+        var json = JSON.readTree(report.json());
+        assertEquals(2, json.path("summary").path("exitCode").asInt());
+        assertEquals(1, json.path("summary").path("untestedFixtures").asInt());
+        assertEquals("UNTESTED_FIXTURES", json.path("errors").get(0).path("code").asText());
+        var suite = xml(report.junitXml()).getDocumentElement();
+        assertEquals("1", suite.getAttribute("errors"));
+        assertEquals("1", suite.getAttribute("skipped"));
+        assertFalse(report.json().contains("private-fixture-id"));
+        assertEquals(report, new MigrationLab().run(manifest, DATE, false, true));
+    }
+
+    @Test void strictCoverageStillPassesFullyComparedCorpus() throws Exception {
+        Report report = new MigrationLab().run(manifest(Echo.class, Echo.class, "{}", Map.of()), DATE, false, true);
+        assertEquals(0, report.exitCode());
+        assertEquals(0, JSON.readTree(report.json()).path("summary").path("untestedFixtures").asInt());
+    }
+
     @Test void expectedRulesRequireExactScopeAndFailWhenExpiredOrUnused() throws Exception {
         List<Map<String, Object>> rules = List.of(rule("accept", "ACCEPTANCE"), rule("roundtrip", "ROUNDTRIP_ACCEPTANCE"));
         Path manifest = manifest(Echo.class, Reject.class, "{}", Map.of("rules", rules));
