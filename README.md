@@ -94,9 +94,23 @@ Reports are deterministic for the same artifacts, fixtures, environment and `--a
 After installing or publishing the artifacts to your own repository, the library entry point is:
 
 ```java
-Report report = new MigrationLab().run(manifest, LocalDate.of(2026, 10, 8), false);
+Report report = new MigrationLab().run(manifest, LocalDate.of(2026, 10, 8), false, true);
 if (report.exitCode() != 0) throw new AssertionError("Serializer gate failed");
 ```
+
+For a CI gate that requires every fixture to be compared, pass the fourth
+`failOnUntested` argument as `true`, as above, or add `--fail-on-untested` to the
+CLI. Any nonzero `summary.untestedFixtures` then produces exit **2**, a
+`COVERAGE/UNTESTED_FIXTURES` JSON error and a JUnit error. The default keeps
+rejection-testing workflows valid: two rejected inputs remain skipped, so exit
+0 alone does not establish semantic coverage. The release demo intentionally
+contains five such cases; inspect or separate them before using a strict gate.
+
+Report paths cannot overlap the manifest, fixture/configuration files, Java
+executables or declared classpath entries/trees, even with `--force`. Input aliases
+are checked before execution and again before publication. Keep reports outside
+source/classpath trees; ordinary concurrent edits are checked, but publication
+is not a security boundary against hostile filesystem races.
 
 Core coordinates are `io.github.rad1092.serdeproof:serdeproof-core:0.1.1`; the adapter needs only `serdeproof-api:0.1.1`. Maven and Gradle dependency declarations, explicit manifest fields and expected-change examples are in [USAGE](docs/USAGE.md). JUnit XML can be uploaded by any CI test reporter. No Maven or Gradle plugin is required.
 
