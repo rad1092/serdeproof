@@ -19,6 +19,17 @@ def run(args, expected=0, cwd=ROOT):
     result = subprocess.run([str(x) for x in args], cwd=cwd, capture_output=True, text=True,
                             encoding="utf-8", errors="replace", timeout=180)
     if result.returncode != expected:
+        # TemporaryDirectory cleanup removes the report on failure. Keep only
+        # fixed infrastructure status counts in logs so CI failures are useful
+        # without publishing fixture identities, payloads or adapter errors.
+        arguments = [str(x) for x in args]
+        if "--json" in arguments:
+            report_path = pathlib.Path(arguments[arguments.index("--json") + 1])
+            if report_path.is_file():
+                data = json.loads(report_path.read_text(encoding="utf-8"))
+                codes = ("TIMEOUT", "CRASH", "START_FAILED", "INPUT_LIMIT", "OUTPUT_LIMIT", "MALFORMED_OUTPUT")
+                counts = {code: sum(error.get("code") == code for error in data.get("errors", [])) for code in codes}
+                print("Infrastructure status counts: " + json.dumps(counts), file=sys.stderr, flush=True)
         raise AssertionError(f"Expected exit {expected}, got {result.returncode}\n{result.stdout[-3000:]}\n{result.stderr[-3000:]}")
     return result
 
