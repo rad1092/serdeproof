@@ -1,5 +1,12 @@
 # Security and limitations
 
+Version 0.1.1 fixes adapter-cleanup ownership checks observed during Windows
+release verification. Older releases could mistake stale parent PID relationships
+for current descendants after a short-lived adapter JVM exited. Upgrade before
+using the process supervisor. The fix refuses unverifiable or reused identities,
+including the current JVM, and retains best-effort descendant cleanup; it does
+not provide OS job-object containment or a hostile-code sandbox.
+
 SerdeProof launches **trusted local adapter code with your operating-system account's privileges**. The separate JVM prevents dependency collisions and helps contain accidental hangs. It is not an OS sandbox. Adapters can read files, use the network, spawn processes and access inherited environment variables. Run only adapters you reviewed; use an isolated CI worker/container with minimal credentials for sensitive applications.
 
 The runner uses argument arrays, never shell interpolation. Explicit classpath paths and JVM arguments are configuration, not untrusted remote input. A malicious adapter or JVM option can defeat process supervision. Descendant cleanup is best effort: detached descendants and platform restrictions cannot be reliably controlled by portable Java APIs. A timeout bounds normal I/O and execution, not CPU/memory allocation or JVM startup blocked by the OS. Use external OS resource limits where required.

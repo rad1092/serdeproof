@@ -7,7 +7,7 @@ Requires JDK 17+; the wrapper pins Maven 3.9.11. Development smoke and audit scr
 ```sh
 ./mvnw -B -ntp clean install
 python3 scripts/smoke.py
-java -jar serdeproof-cli/target/serdeproof-cli-0.1.0.jar --help
+java -jar serdeproof-cli/target/serdeproof-cli-0.1.1.jar --help
 ```
 
 Windows PowerShell: `.\mvnw.cmd -B -ntp clean install`, then `python scripts/smoke.py`. The smoke uses installed artifacts in `~/.m2/repository`, or `.local-repository` when that project-local directory exists. Set `SERDEPROOF_MAVEN_REPO` when you use another Maven local repository.
@@ -18,7 +18,7 @@ Maven adapter dependency (installed locally or published to your own artifact re
 <dependency>
   <groupId>io.github.rad1092.serdeproof</groupId>
   <artifactId>serdeproof-api</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
@@ -26,7 +26,7 @@ Use `serdeproof-core` instead for a library caller. The core transitively includ
 
 ```kotlin
 repositories { mavenLocal(); mavenCentral() }
-dependencies { testImplementation("io.github.rad1092.serdeproof:serdeproof-api:0.1.0") }
+dependencies { testImplementation("io.github.rad1092.serdeproof:serdeproof-api:0.1.1") }
 ```
 
 The Maven reactor and installed API example are exercised in CI. The Gradle declaration is a dependency-consumption example, not a separately tested Gradle plugin. No coordinates are published to Maven Central by this release.
@@ -92,7 +92,7 @@ Initial comparison direction is `baseline-to-candidate`. Kind is `ACCEPTANCE`, `
 ## Reports and release gate
 
 ```sh
-java -jar serdeproof-cli/target/serdeproof-cli-0.1.0.jar run \
+java -jar serdeproof-cli/target/serdeproof-cli-0.1.1.jar run \
   --manifest examples/compatible.json --json reports/compatibility.json \
   --junit reports/compatibility.xml --as-of 2026-10-08
 ```

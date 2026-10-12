@@ -12,7 +12,9 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -258,17 +260,25 @@ public final class JvmAdapter implements AutoCloseable {
     private static final class ActiveProcess {
         private final Process process;
         private final Path launcher;
-        private final Set<ProcessHandle> descendants = ConcurrentHashMap.newKeySet();
+        private final Instant started;
+        private final Set<OwnedDescendant> descendants = ConcurrentHashMap.newKeySet();
         private final AtomicBoolean exceeded = new AtomicBoolean();
 
         private ActiveProcess(Process process, Path launcher) {
             this.process = process;
             this.launcher = launcher;
+            this.started = process.info().startInstant().orElse(null);
         }
 
         private void captureDescendants() {
+            // Windows retains historical parent PIDs. Once a short-lived JVM
+            // exits, PID reuse can make an unrelated process appear below it.
+            if (!process.isAlive() || started == null) return;
             try (var handles = process.descendants()) {
-                handles.forEach(descendants::add);
+                handles.forEach(handle -> {
+                    OwnedDescendant owned = OwnedDescendant.observe(handle, process.pid(), started);
+                    if (owned != null && process.isAlive()) descendants.add(owned);
+                });
             } catch (RuntimeException ignored) {
                 // Trusted adapters normally share user privileges; restrictions can prevent inspection.
             }
@@ -279,19 +289,21 @@ public final class JvmAdapter implements AutoCloseable {
             try {
                 captureDescendants();
                 // Kill children before their parent so the JVM can reap them while it is still alive.
-                descendants.forEach(handle -> destroy(handle, false));
+                descendants.forEach(handle -> handle.destroy(false));
                 waitForDescendants(100);
-                descendants.forEach(handle -> destroy(handle, true));
+                descendants.forEach(handle -> handle.destroy(true));
                 waitForDescendants(100);
-                destroy(process.toHandle(), false);
+                // Process owns the native child handle; do not look up a dead
+                // child's PID again through ProcessHandle for root termination.
+                if (process.isAlive()) process.destroy();
                 try {
                     if (!process.waitFor(100, TimeUnit.MILLISECONDS)) {
-                        destroy(process.toHandle(), true);
+                        process.destroyForcibly();
                         process.waitFor(500, TimeUnit.MILLISECONDS);
                     }
                 } catch (InterruptedException ex) {
                     interrupted = true;
-                    destroy(process.toHandle(), true);
+                    process.destroyForcibly();
                 }
                 closeQuietly(process.getOutputStream());
                 closeQuietly(process.getInputStream());
@@ -304,7 +316,7 @@ public final class JvmAdapter implements AutoCloseable {
 
         private void waitForDescendants(long millis) {
             long end = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(millis);
-            while (descendants.stream().anyMatch(ProcessHandle::isAlive) && System.nanoTime() < end) {
+            while (descendants.stream().anyMatch(OwnedDescendant::isAlive) && System.nanoTime() < end) {
                 try {
                     Thread.sleep(5);
                 } catch (InterruptedException ex) {
@@ -314,18 +326,50 @@ public final class JvmAdapter implements AutoCloseable {
             }
         }
 
-        private static void destroy(ProcessHandle handle, boolean force) {
+        private static void closeQuietly(java.io.Closeable stream) {
+            try { stream.close(); } catch (IOException ignored) { }
+        }
+    }
+
+    // Package visibility permits deterministic stale-PID tests without killing
+    // real unrelated processes or depending on the OS to reuse a PID on demand.
+    record OwnedDescendant(ProcessHandle handle, Instant started) {
+        static OwnedDescendant observe(ProcessHandle candidate, long rootPid, Instant rootStart) {
+            long self = ProcessHandle.current().pid();
+            if (candidate.pid() == self || candidate.pid() == rootPid) return null;
+            Instant candidateStart = candidate.info().startInstant().orElse(null);
+            if (candidateStart == null || candidateStart.isBefore(rootStart)) return null;
+            ProcessHandle child = candidate;
+            Instant childStart = candidateStart;
+            Set<Long> seen = new HashSet<>();
+            for (int depth = 0; depth < 64 && seen.add(child.pid()); depth++) {
+                ProcessHandle parent = child.parent().orElse(null);
+                if (parent == null || parent.pid() == self) return null;
+                Instant parentStart = parent.info().startInstant().orElse(null);
+                if (parentStart == null || parentStart.isAfter(childStart)) return null;
+                if (parent.pid() == rootPid) {
+                    return parentStart.equals(rootStart) ? new OwnedDescendant(candidate, candidateStart) : null;
+                }
+                if (parentStart.isBefore(rootStart)) return null;
+                child = parent;
+                childStart = parentStart;
+            }
+            return null;
+        }
+
+        boolean isAlive() {
+            return handle.pid() != ProcessHandle.current().pid() && handle.isAlive()
+                    && handle.info().startInstant().map(started::equals).orElse(false);
+        }
+
+        void destroy(boolean force) {
             try {
-                if (handle.isAlive()) {
+                if (isAlive()) {
                     if (force) handle.destroyForcibly(); else handle.destroy();
                 }
             } catch (SecurityException | UnsupportedOperationException ignored) {
-                // Cleanup is best effort and cannot replace OS containment of hostile code.
+                // Unverifiable/restricted identities are never a reason to kill by PID alone.
             }
-        }
-
-        private static void closeQuietly(java.io.Closeable stream) {
-            try { stream.close(); } catch (IOException ignored) { }
         }
     }
 }

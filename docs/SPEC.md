@@ -28,7 +28,7 @@ Exit: 0 no unexpected differences, 1 unexpected semantic/acceptance/roundtrip fi
 
 ## Commands and layout
 
-`mvn -B verify`, `mvn -B install`, `java -jar serdeproof-cli/target/serdeproof-cli-0.1.0.jar --help`.
+`mvn -B verify`, `mvn -B install`, `java -jar serdeproof-cli/target/serdeproof-cli-0.1.1.jar --help`.
 Sources follow Maven layout; maintained tests cover parser precision, rule scope/expiry, process limits/timeout/crash/protocol/cancellation and real Jackson defaults. Examples demonstrate installed library and custom DTO adapter usage. Docs include Korean quickstart, research, security, limitations, reproduction and release evidence.
 
 ## Verification and boundaries

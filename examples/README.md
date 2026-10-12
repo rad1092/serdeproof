@@ -3,12 +3,12 @@
 The corpus is synthetic and intentionally small. It contains no customer data. From the repository root, build with `./mvnw -B -ntp clean install` (`.\mvnw.cmd` in Windows PowerShell) before running these manifests; adapter classpaths are relative to each manifest. The demo JARs each carry exactly one Jackson version, so the application DTO classes and serializer never share a JVM across baseline and candidate.
 
 ```sh
-java -jar serdeproof-cli/target/serdeproof-cli-0.1.0.jar run \
+java -jar serdeproof-cli/target/serdeproof-cli-0.1.1.jar run \
   --manifest examples/demo.json --json report.json --junit junit.xml \
   --as-of 2026-10-08 --details
 ```
 
-Exit 1 is expected for this command because the demo intentionally contains migration findings. For an extracted release archive, use `lib/serdeproof-cli-0.1.0.jar` and `examples/release-demo.json` instead. Choose fresh report filenames or explicitly use `--force` to replace previous reports.
+Exit 1 is expected for this command because the demo intentionally contains migration findings. For an extracted release archive, use `lib/serdeproof-cli-0.1.1.jar` and `examples/release-demo.json` instead. Choose fresh report filenames or explicitly use `--force` to replace previous reports.
 
 | Manifest | Purpose | Intended gate result |
 | --- | --- | --- |

@@ -10,11 +10,11 @@ For a real service, add this dependency to the adapter build after installing Se
 <dependency>
   <groupId>io.github.rad1092.serdeproof</groupId>
   <artifactId>serdeproof-api</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
-For the calling Java application, also add `io.github.rad1092.serdeproof:serdeproof-core:0.1.0`. These coordinates are installed locally by `mvn install`; this project does not claim publication to Maven Central.
+For the calling Java application, also add `io.github.rad1092.serdeproof:serdeproof-core:0.1.1`. These coordinates are installed locally by `mvn install`; this project does not claim publication to Maven Central.
 
 Keep the application's own Jackson version and module dependencies in the adapter build. Build baseline and candidate artifacts separately; do not put both serializer dependency trees in one adapter classpath. Use an ordinary thin adapter JAR plus explicit dependency paths, or an application-controlled fat JAR. Include the API JAR on each adapter's effective runtime classpath when it is not already bundled.
 
@@ -24,11 +24,11 @@ A manifest can point to the two builds:
 {
   "baseline": {
     "adapterClass": "example.OrderAdapter",
-    "classpath": ["baseline/adapter.jar", "baseline/serdeproof-api-0.1.0.jar", "baseline/jackson-databind.jar", "baseline/jackson-core.jar", "baseline/jackson-annotations.jar"]
+    "classpath": ["baseline/adapter.jar", "baseline/serdeproof-api-0.1.1.jar", "baseline/jackson-databind.jar", "baseline/jackson-core.jar", "baseline/jackson-annotations.jar"]
   },
   "candidate": {
     "adapterClass": "example.OrderAdapter",
-    "classpath": ["candidate/adapter.jar", "candidate/serdeproof-api-0.1.0.jar", "candidate/jackson-databind.jar", "candidate/jackson-core.jar", "candidate/jackson-annotations.jar"]
+    "classpath": ["candidate/adapter.jar", "candidate/serdeproof-api-0.1.1.jar", "candidate/jackson-databind.jar", "candidate/jackson-core.jar", "candidate/jackson-annotations.jar"]
   },
   "fixtures": [{"id":"order-1","type":"order","file":"order.json","hints":{"/status":"ENUM"}}]
 }

@@ -11,7 +11,7 @@ import tempfile
 import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 GROUP = pathlib.Path("io/github/rad1092/serdeproof")
 
 

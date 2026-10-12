@@ -26,8 +26,8 @@ public final class Main {
     public static int execute(String[] args, PrintStream out, PrintStream err) {
         if (args.length == 1 && (args[0].equals("--help") || args[0].equals("help"))) {
             out.println("""
-                    SerdeProof 0.1.0 — serializer migration evidence from your local corpus
-                    Usage: java -jar serdeproof-cli-0.1.0.jar run --manifest FILE
+                    SerdeProof 0.1.1 — serializer migration evidence from your local corpus
+                    Usage: java -jar serdeproof-cli-0.1.1.jar run --manifest FILE
                              --json FILE --junit FILE [--as-of YYYY-MM-DD] [--details] [--force]
                     --details  Include fixture IDs, JSON pointers and rule reasons. Never values.
                     --force    Replace existing report files.
@@ -39,7 +39,7 @@ public final class Main {
             return 0;
         }
         if (args.length == 1 && args[0].equals("--version")) {
-            out.println("SerdeProof 0.1.0");
+            out.println("SerdeProof 0.1.1");
             return 0;
         }
         try {

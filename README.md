@@ -8,13 +8,13 @@ SerdeProof is a Java 17 library and CLI. Each adapter runs in its own JVM and de
 
 ## Try the release without building
 
-Download `serdeproof-0.1.0.zip` and `SHA256SUMS` from
-[Releases](https://github.com/rad1092/serdeproof/releases/tag/v0.1.0), verify the
+Download `serdeproof-0.1.1.zip` and `SHA256SUMS` from
+[Releases](https://github.com/rad1092/serdeproof/releases/tag/v0.1.1), verify the
 archive's SHA-256, and extract the whole archive. With Java 17+ installed, open a
-terminal **inside the extracted `serdeproof-0.1.0` folder** and run:
+terminal **inside the extracted `serdeproof-0.1.1` folder** and run:
 
 ```sh
-java -jar lib/serdeproof-cli-0.1.0.jar run --manifest examples/release-demo.json --json reports/first.json --junit reports/first.xml --as-of 2026-10-08
+java -jar lib/serdeproof-cli-0.1.1.jar run --manifest examples/release-demo.json --json reports/first.json --junit reports/first.xml --as-of 2026-10-08
 ```
 
 The command intentionally exits **1**: the synthetic Jackson migration corpus
@@ -24,8 +24,9 @@ has differences to review. Open `reports/first.json`: its `summary` should show
 Exit **2** means the experiment could not complete, not an ordinary migration
 finding. The same command works on PowerShell as one line.
 
-This exact public ZIP and result were verified on macOS arm64 with Java 17 on
-2026-10-12. No Maven install or hosted service is needed for this release demo.
+The demo result was reproduced on macOS arm64 with Java 17 on 2026-10-12.
+Use **0.1.1 or later** for the process-ownership fix described in the changelog.
+No Maven install or hosted service is needed for this release demo.
 Keep all `lib/` JARs together; copying only the CLI JAR does not supply the demo
 adapters. Reports default to hashed identities; `--details` reveals fixture IDs,
 paths within JSON and rule metadata. Neither mode writes fixture payload values.
@@ -40,14 +41,14 @@ Install a JDK 17 or newer and run these commands from a source checkout (or the 
 ```sh
 ./mvnw -B -ntp clean install
 python3 scripts/smoke.py
-java -jar serdeproof-cli/target/serdeproof-cli-0.1.0.jar run \
+java -jar serdeproof-cli/target/serdeproof-cli-0.1.1.jar run \
   --manifest examples/demo.json --json reports/demo.json --junit reports/demo.xml \
   --as-of 2026-10-08 --details
 ```
 
 On Windows PowerShell use `.\mvnw.cmd` and `python`; the `java` command is identical when written on one line. The demo intentionally finds differences, so the last command exits **1**. Exit **2** means an incomplete or invalid experiment; it must not be treated as a compatibility finding. For another run, choose fresh report filenames or add `--force` to replace the previous reports.
 
-The [GitHub release](https://github.com/rad1092/serdeproof/releases) distributes a ZIP and standalone executable JARs. Unzip the ZIP and use its `lib/serdeproof-cli-0.1.0.jar` with `examples/release-demo.json`. Release assets are unsigned and not notarized. Coordinates are installed locally by `mvn install`; they are **not published to Maven Central**.
+The [GitHub release](https://github.com/rad1092/serdeproof/releases) distributes a ZIP and standalone executable JARs. Unzip the ZIP and use its `lib/serdeproof-cli-0.1.1.jar` with `examples/release-demo.json`. Release assets are unsigned and not notarized. Coordinates are installed locally by `mvn install`; they are **not published to Maven Central**.
 
 ## Bring your DTO and mapper
 
@@ -97,7 +98,7 @@ Report report = new MigrationLab().run(manifest, LocalDate.of(2026, 10, 8), fals
 if (report.exitCode() != 0) throw new AssertionError("Serializer gate failed");
 ```
 
-Core coordinates are `io.github.rad1092.serdeproof:serdeproof-core:0.1.0`; the adapter needs only `serdeproof-api:0.1.0`. Maven and Gradle dependency declarations, explicit manifest fields and expected-change examples are in [USAGE](docs/USAGE.md). JUnit XML can be uploaded by any CI test reporter. No Maven or Gradle plugin is required.
+Core coordinates are `io.github.rad1092.serdeproof:serdeproof-core:0.1.1`; the adapter needs only `serdeproof-api:0.1.1`. Maven and Gradle dependency declarations, explicit manifest fields and expected-change examples are in [USAGE](docs/USAGE.md). JUnit XML can be uploaded by any CI test reporter. No Maven or Gradle plugin is required.
 
 ## Scope and alternatives
 
