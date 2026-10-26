@@ -31,7 +31,9 @@ public final class Main {
             out.println("""
                     SerdeProof 0.1.1 — serializer migration evidence from your local corpus
                     Usage: java -jar serdeproof-cli-0.1.1.jar run --manifest FILE
-                             --json FILE --junit FILE [--as-of YYYY-MM-DD] [--details] [--force] [--fail-on-untested]
+                             --json FILE --junit FILE [--markdown FILE] [--as-of YYYY-MM-DD]
+                             [--details] [--force] [--fail-on-untested]
+                    --markdown Also write a short summary for a pull request or CI job summary.
                     --details  Include fixture IDs, JSON pointers and rule reasons. Never values.
                     --force    Replace existing reports, never declared inputs or classpath trees.
                     --fail-on-untested  Exit 2 if any fixture lacks semantic comparison.
@@ -51,27 +53,34 @@ public final class Main {
             Path manifest = Path.of(required(options, "--manifest")).toAbsolutePath().normalize();
             Path json = Path.of(required(options, "--json")).toAbsolutePath().normalize();
             Path junit = Path.of(required(options, "--junit")).toAbsolutePath().normalize();
+            Path markdown = options.containsKey("--markdown")
+                    ? Path.of(options.get("--markdown")).toAbsolutePath().normalize() : null;
             boolean force = options.containsKey("--force");
-            if (sameDestination(json, junit) || sameDestination(json, manifest) || sameDestination(junit, manifest)) {
-                throw new IllegalArgumentException();
+            var outputs = new ArrayList<Path>(java.util.List.of(json, junit));
+            if (markdown != null) outputs.add(markdown);
+            for (int i = 0; i < outputs.size(); i++) {
+                if (sameDestination(outputs.get(i), manifest)) throw new ReportDestination();
+                for (int j = i + 1; j < outputs.size(); j++)
+                    if (sameDestination(outputs.get(i), outputs.get(j))) throw new ReportDestination();
             }
             var inputs = protectedInputs(manifest);
-            checkInputs(json, inputs);
-            checkInputs(junit, inputs);
-            checkDestination(json, force);
-            checkDestination(junit, force);
+            for (Path output : outputs) {
+                checkInputs(output, inputs);
+                checkDestination(output, force);
+            }
             LocalDate date = options.containsKey("--as-of")
                     ? LocalDate.parse(options.get("--as-of")) : LocalDate.now(ZoneOffset.UTC);
             var report = new MigrationLab().run(manifest, date, options.containsKey("--details"),
                     options.containsKey("--fail-on-untested"));
             // Ordinary edits while adapters run must not redirect publication onto inputs.
             inputs.addAll(protectedInputs(manifest));
-            checkInputs(json, inputs);
-            checkInputs(junit, inputs);
-            checkDestination(json, force);
-            checkDestination(junit, force);
+            for (Path output : outputs) {
+                checkInputs(output, inputs);
+                checkDestination(output, force);
+            }
             write(json, report.json(), force);
             write(junit, report.junitXml(), force);
+            if (markdown != null) write(markdown, report.markdown(), force);
             out.println(switch (report.exitCode()) {
                 case 0 -> "Completed: no unexpected findings in this corpus. Review untested cases in the report.";
                 case 1 -> "Completed: unexpected differences found. Review JSON or JUnit report.";
@@ -83,14 +92,42 @@ public final class Main {
             err.println("Cancelled. Adapter cleanup requested.");
             return 130;
         } catch (IOException | RuntimeException e) {
-            err.println("Run failed: invalid configuration, report destination, or local I/O. Use --help; diagnostics are redacted.");
+            // Codes and fixed hints only: exception messages can contain local paths or payload text.
+            String code = failureCode(e);
+            err.println("Run failed (" + code + "). " + FAILURE_HINTS.getOrDefault(code, "Use --help. Details are not printed."));
             return 2;
         }
     }
 
+    private static final class ReportDestination extends IOException {
+        private static final long serialVersionUID = 1L;
+    }
+
+    private static final Map<String, String> FAILURE_HINTS = Map.of(
+            "USAGE", "Check the options with --help.",
+            "PATH_ENCODING", "A file name has non-ASCII characters, but the JVM is not using UTF-8 for file names."
+                    + " Run it with a UTF-8 locale, for example LANG=C.UTF-8.",
+            "PATH_INVALID", "A path in the manifest is not valid on this system.",
+            "REPORT_DESTINATION", "A report path already exists, repeats another path, or overlaps an input."
+                    + " Choose new paths or add --force.",
+            "MANIFEST", "The manifest could not be read as JSON. Check the file named by --manifest.");
+
+    static String failureCode(Exception e) {
+        if (e instanceof java.nio.file.InvalidPathException) {
+            String encoding = System.getProperty("sun.jnu.encoding", "");
+            return encoding.toUpperCase(java.util.Locale.ROOT).replace("-", "").equals("UTF8") ? "PATH_INVALID" : "PATH_ENCODING";
+        }
+        if (e instanceof RunConfiguration.Invalid invalid) return invalid.code();
+        if (e instanceof ReportDestination) return "REPORT_DESTINATION";
+        if (e instanceof IllegalArgumentException || e instanceof java.time.format.DateTimeParseException) return "USAGE";
+        if (e instanceof com.fasterxml.jackson.core.JacksonException) return "MANIFEST";
+        if (e instanceof java.nio.file.NoSuchFileException) return "FILE_NOT_FOUND";
+        return "IO";
+    }
+
     private static Map<String, String> parse(String[] args) {
         if (args.length == 0 || !args[0].equals("run")) throw new IllegalArgumentException();
-        Set<String> values = Set.of("--manifest", "--json", "--junit", "--as-of");
+        Set<String> values = Set.of("--manifest", "--json", "--junit", "--markdown", "--as-of");
         Set<String> flags = Set.of("--details", "--force", "--fail-on-untested");
         Map<String, String> result = new LinkedHashMap<>();
         for (int i = 1; i < args.length; i++) {
@@ -137,14 +174,14 @@ public final class Main {
         for (Path input : inputs) {
             if (sameDestination(target, input)
                     || (Files.isDirectory(input) && destination.startsWith(input.toRealPath()))) {
-                throw new IOException("Report destination overlaps a declared input");
+                throw new ReportDestination();
             }
         }
     }
 
     private static void checkDestination(Path target, boolean force) throws IOException {
         if (Files.isSymbolicLink(target) || (Files.exists(target) && (!force || !Files.isRegularFile(target)))) {
-            throw new IOException("Destination unavailable");
+            throw new ReportDestination();
         }
     }
 

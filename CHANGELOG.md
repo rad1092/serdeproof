@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Add `--markdown FILE`: a short summary of the run for a pull request or a GitHub
+  Actions job summary, grouped by what changed. Like the other reports, it never
+  contains payload values. `Report` gains a `markdown()` component; the 0.1.x
+  three-argument constructor remains.
+- Failed runs now print a code and a fixed hint, for example
+  `Run failed (PATH_ENCODING)` when a non-ASCII file name meets a JVM that isn't
+  using UTF-8 for file names, which happened with the release demo in containers
+  without a UTF-8 locale. Paths and payload text are still never printed.
+
 ## 0.1.1 — 2026-10-12
 
 - Refuse report destinations overlapping declared fixtures, mapper configuration, Java executables, and classpath files/directories even with `--force`; recheck inputs before publication.

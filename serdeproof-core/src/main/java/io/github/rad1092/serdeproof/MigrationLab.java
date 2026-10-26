@@ -3,6 +3,7 @@ package io.github.rad1092.serdeproof;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.rad1092.serdeproof.internal.Fingerprints;
 import io.github.rad1092.serdeproof.internal.JsonEvidence;
+import io.github.rad1092.serdeproof.internal.MarkdownSummary;
 import io.github.rad1092.serdeproof.internal.RunConfiguration;
 import io.github.rad1092.serdeproof.internal.RunConfiguration.Adapter;
 import io.github.rad1092.serdeproof.internal.RunConfiguration.Fixture;
@@ -257,7 +258,7 @@ public final class MigrationLab {
             String json = boundedJson(report);
             String xml = junit(fixtures, errors);
             if (xml.getBytes(StandardCharsets.UTF_8).length > METADATA_LIMIT) throw new ReportLimitException();
-            return new Report(json, xml, exit);
+            return new Report(json, xml, MarkdownSummary.render(report), exit);
         } catch (ReportLimitException e) {
             Map<String, Object> compact = base(LocalDate.parse(String.valueOf(report.get("evaluationDate"))), Boolean.TRUE.equals(report.get("details")));
             List<Map<String, Object>> limits = List.of(error("LIMIT", "REPORT_SIZE_LIMIT", null));

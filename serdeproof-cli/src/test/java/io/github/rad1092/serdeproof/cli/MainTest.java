@@ -20,6 +20,14 @@ class MainTest {
         assertTrue(bytes.toString().contains("only this corpus"));
     }
 
+    @Test void failuresNameACodeAndAFixedHint() {
+        var bytes = new ByteArrayOutputStream();
+        assertEquals(2, Main.execute(new String[]{"run", "--manifest"}, System.out, new PrintStream(bytes)));
+        assertTrue(bytes.toString().startsWith("Run failed (USAGE)."), bytes.toString());
+        String pathCode = Main.failureCode(new java.nio.file.InvalidPathException("x", "y"));
+        assertTrue(java.util.Set.of("PATH_INVALID", "PATH_ENCODING").contains(pathCode), pathCode);
+    }
+
     @Test void invalidArgumentsNeverEchoUserData() {
         for (String[] args : new String[][]{
                 {}, {"run", "--secret-value"}, {"run", "--manifest"},
