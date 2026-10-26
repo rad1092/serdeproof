@@ -1,10 +1,29 @@
 # SerdeProof
 
-Run your existing Java DTOs, mapper configuration and payload corpus against two serializer builds before shipping an upgrade.
+See how your JSON changes before moving to Jackson 3 or Spring Boot 4.
 
-SerdeProof is a Java 17 library and CLI. Each adapter runs in its own JVM and dependency graph. It records input acceptance, precise JSON output changes, domain observations and the four baseline/candidate producer→consumer combinations. Use it as a small CI release gate alongside your existing tests.
+Spring Boot 4.0 and Spring Framework 7.0 make Jackson 3 the default. Jackson 3
+writes dates as ISO-8601 strings instead of timestamps and sorts properties
+alphabetically ([Spring blog](https://spring.io/blog/2025/10/07/introducing-jackson-3-support-in-spring/)).
+SerdeProof runs your own DTOs, mapper settings and sample payloads on both
+versions, each in its own JVM, and reports:
 
-**Passing means no unexpected differences were observed in this corpus. It does not prove business equivalence. Adapters are trusted local code, with your privileges; this is not a sandbox.**
+- which payloads one version accepts and the other rejects,
+- which values in the JSON output changed, such as a date that became a string,
+- whether JSON written by one version can still be read by the other.
+
+It compares JSON by structure and value, so a failing snapshot test caused only
+by the new property order shows up as no difference. Use it as a CI gate while
+you upgrade: approve the changes you expect, with a reason and an expiry date,
+and the build fails only on new ones.
+
+```sh
+java -jar lib/serdeproof-cli-0.1.1.jar run --manifest serdeproof.json \
+  --json reports/run.json --junit reports/run.xml --markdown reports/summary.md
+```
+
+`--markdown` writes a short summary for a pull request or a GitHub Actions job
+summary (`--markdown "$GITHUB_STEP_SUMMARY" --force`).
 
 ## Try the release without building
 
@@ -17,10 +36,10 @@ terminal **inside the extracted `serdeproof-0.1.1` folder** and run:
 java -jar lib/serdeproof-cli-0.1.1.jar run --manifest examples/release-demo.json --json reports/first.json --junit reports/first.xml --as-of 2026-10-08
 ```
 
-The command intentionally exits **1**: the synthetic Jackson migration corpus
-has differences to review. Open `reports/first.json`: its `summary` should show
-17 fixtures processed, 12 unexpected differences, 5 untested fixtures and
-0 infrastructure errors. Each fixture includes four producer/consumer checks.
+The command intentionally exits **1**: the example Jackson 2 → 3 payloads have
+differences to review. Add `--markdown reports/first.md` for a readable summary,
+or open `reports/first.json`: its `summary` should show 17 fixtures processed,
+12 unexpected differences, 5 untested fixtures and 0 infrastructure errors. Each fixture includes four producer/consumer checks.
 Exit **2** means the experiment could not complete, not an ordinary migration
 finding. The same command works on PowerShell as one line.
 
@@ -125,3 +144,12 @@ Start with sanitized payloads that caused incidents or reflect real queues and s
 - [Architecture decisions](docs/ARCHITECTURE.md)
 - [Reproduction and validation evidence](docs/VALIDATION.md)
 - [Changelog](CHANGELOG.md) · [Apache-2.0 license](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+
+## Limitations
+
+- A pass means your sample payloads showed no unexpected difference. Payloads you
+  didn't include are not covered, and it doesn't prove the business meaning is the same.
+- Adapters are your own code and run with your permissions. This is not a sandbox.
+- File names with non-ASCII characters need a UTF-8 locale. In a container, run with
+  `LANG=C.UTF-8`.
+- Not on Maven Central yet. Build from source or use the release ZIP.

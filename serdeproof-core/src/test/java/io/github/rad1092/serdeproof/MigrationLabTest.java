@@ -40,6 +40,15 @@ class MigrationLabTest {
         assertEquals("1", xml.getDocumentElement().getAttribute("failures"));
     }
 
+    @Test void markdownSummaryGroupsUnexpectedFindingsByKind() throws Exception {
+        Report report = new MigrationLab().run(manifest(Echo.class, NumericUpgrade.class, "{\"n\":1}", Map.of()), DATE, false);
+        String markdown = report.markdown();
+        assertTrue(markdown.matches("(?s)## SerdeProof: \\d+ unexpected differences?\n.*"), markdown);
+        assertTrue(markdown.contains("| Payloads checked | 1 |"), markdown);
+        assertTrue(markdown.contains("| JSON output: same number, written differently | baseline → candidate | 1 |"), markdown);
+        assertTrue(markdown.contains("Run with `--details`"), markdown);
+    }
+
     @Test void detectsLossInBothSameVersionAndCrossVersionRoundTrips() throws Exception {
         Report report = new MigrationLab().run(manifest(Losing.class, Losing.class, "{\"account\":7}", Map.of()), DATE, true);
         JsonNode fixture = JSON.readTree(report.json()).path("fixtures").get(0);
@@ -57,6 +66,7 @@ class MigrationLabTest {
         for (String sensitive : List.of("private-fixture-id", "private/account~field", "private-value-very-secret", "private-exception-message", temp.toString(), "private-type")) {
             assertFalse(report.json().contains(sensitive), sensitive);
             assertFalse(report.junitXml().contains(sensitive), sensitive);
+            assertFalse(report.markdown().contains(sensitive), sensitive);
         }
         assertTrue(report.json().contains("sha256:"));
         assertNotNull(xml(report.junitXml()));
